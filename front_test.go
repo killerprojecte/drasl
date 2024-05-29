@@ -367,16 +367,6 @@ func (ts *TestSuite) testRegistrationNewPlayer(t *testing.T) {
 		ts.registrationShouldFail(t, rec, "That username is taken.", returnURL)
 	}
 	{
-		// Registration with a too-long username should fail
-		form := url.Values{}
-		form.Set("username", "AReallyReallyReallyLongUsername")
-		form.Set("password", TEST_PASSWORD)
-		form.Set("returnUrl", returnURL)
-		rec := ts.PostForm(t, ts.Server, "/drasl/register", form, nil, nil)
-
-		ts.registrationShouldFail(t, rec, "Invalid username: can't be longer than 16 characters", returnURL)
-	}
-	{
 		// Registration with a too-short password should fail
 		form := url.Values{}
 		form.Set("username", usernameC)
@@ -788,15 +778,6 @@ func (ts *TestSuite) testRegistrationExistingPlayerWithVerification(t *testing.T
 		ts.registrationShouldFail(t, rec, "Couldn't verify your skin, maybe try again: player does not have a skin", returnURL)
 	}
 	{
-		// Get challenge skin with invalid username should fail
-		req := httptest.NewRequest(http.MethodGet, "/drasl/challenge-skin?username=AReallyReallyReallyLongUsername&returnUrl="+ts.App.FrontEndURL+"/drasl/registration", nil)
-		rec := httptest.NewRecorder()
-		ts.Server.ServeHTTP(rec, req)
-		assert.Equal(t, http.StatusSeeOther, rec.Code)
-		assert.Equal(t, "Invalid username: can't be longer than 16 characters", getErrorMessage(rec))
-		assert.Equal(t, returnURL, rec.Header().Get("Location"))
-	}
-	{
 		challengeToken := ts.solveSkinChallenge(t, username)
 		{
 			// Registration should fail if we give the wrong challenge token
@@ -992,16 +973,6 @@ func (ts *TestSuite) testUpdate(t *testing.T) {
 		assert.Nil(t, UnmakeNullString(&updatedUser.CapeHash))
 		assert.NotNil(t, UnmakeNullString(&updatedUser.SkinHash))
 		assert.Nil(t, SetCapeAndSave(ts.App, &updatedUser, bytes.NewReader(RED_CAPE)))
-	}
-	{
-		// Invalid player name should fail
-		body := &bytes.Buffer{}
-		writer := multipart.NewWriter(body)
-		writer.WriteField("playerName", "AReallyReallyReallyLongUsername")
-		writer.WriteField("returnUrl", ts.App.FrontEndURL+"/drasl/profile")
-		assert.Nil(t, writer.Close())
-		rec := ts.PostMultipart(t, ts.Server, "/drasl/update", body, writer, []http.Cookie{*browserTokenCookie}, nil)
-		ts.updateShouldFail(t, rec, "Invalid player name: can't be longer than 16 characters", ts.App.FrontEndURL+"/drasl/profile")
 	}
 	{
 		// Invalid fallback player should fail

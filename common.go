@@ -37,8 +37,8 @@ type ConstantsType struct {
 }
 
 var Constants = &ConstantsType{
-	MaxUsernameLength:   16,
-	MaxPlayerNameLength: 16,
+	MaxUsernameLength:   999,
+	MaxPlayerNameLength: 999,
 	ConfigDirectory:     DEFAULT_CONFIG_DIRECTORY,
 	Version:             VERSION,
 	License:             LICENSE,

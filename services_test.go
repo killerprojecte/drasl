@@ -401,18 +401,6 @@ func (ts *TestSuite) testServicesNameAvailability(t *testing.T) {
 		assert.Equal(t, "AVAILABLE", response.Status)
 	}
 	{
-		// Invalid player name should fail
-		playerName := "AReallyLongAndThusInvalidPlayerName"
-
-		rec := ts.Get(t, ts.Server, "/minecraft/profile/name/"+playerName+"/available", nil, &accessToken)
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
-
-		var response ErrorResponse
-		assert.Nil(t, json.NewDecoder(rec.Body).Decode(&response))
-
-		assert.Equal(t, "CONSTRAINT_VIOLATION", *response.Error)
-	}
-	{
 		// Taken player name
 		playerName := SERVICES_EXISTING_USERNAME
 

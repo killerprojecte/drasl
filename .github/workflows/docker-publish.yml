@@ -28,7 +28,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: unmojang/drasl
+          images: rgbmc/drasl-x
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}

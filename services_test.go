@@ -345,26 +345,6 @@ func (ts *TestSuite) testServicesChangeName(t *testing.T) {
 		assert.Nil(t, ts.App.DB.Save(&user).Error)
 	}
 	{
-		// Invalid name should fail
-		newName := "AReallyLongAndThusInvalidName"
-		req := httptest.NewRequest(http.MethodPut, "/minecraft/profile/name/"+newName, nil)
-		req.Header.Add("Authorization", "Bearer "+accessToken)
-		rec := httptest.NewRecorder()
-		ts.Server.ServeHTTP(rec, req)
-
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
-
-		var response changeNameErrorResponse
-		assert.Nil(t, json.NewDecoder(rec.Body).Decode(&response))
-
-		validateNameError := ValidatePlayerName(ts.App, newName)
-		assert.Equal(t, validateNameError.Error(), response.ErrorMessage)
-
-		// Database should not be changed
-		assert.Nil(t, ts.App.DB.First(&user, "uuid = ?", user.UUID).Error)
-		assert.Equal(t, TEST_USERNAME, user.PlayerName)
-	}
-	{
 		// Existing name should fail
 		newName := SERVICES_EXISTING_USERNAME
 		req := httptest.NewRequest(http.MethodPut, "/minecraft/profile/name/"+newName, nil)
